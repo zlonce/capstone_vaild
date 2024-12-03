@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-NODEJS_SERVER_URL = 'http://localhost:8080/photo-store/photos'
+STORE_SERVER_URL = os.getenv('STORE_SERVER_URL', 'http://store-service:8084/photo-store/photos')
 
 @app.route('/tag', methods=['POST'])
 def process_image():
@@ -47,7 +48,7 @@ def process_image():
             'request': json.dumps(data_dict)
         }
         
-        response = requests.post(NODEJS_SERVER_URL, files=files, data=form_data)
+        response = requests.post(STORE_SERVER_URL, files=files, data=form_data)
         response.raise_for_status()
         
         return jsonify({
@@ -61,4 +62,4 @@ def process_image():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=8083, debug=True)
